@@ -1,0 +1,292 @@
+:root {
+    --themeColor: 216, 151, 60;
+    --bgColor: #ffffea;
+    --midGrey: #7f7f7f;
+    --headerColor: #3b8ea5;
+    --txtColor: #1e2019;
+    --txtHighlight: #ee6352;
+    --lightOverlay: #f7f7d5;
+}
+
+html {
+    background-color: var(--bgColor);
+    color: var(--txtColor);
+    font-size: 15px;
+}
+
+::selection {
+    background: rgba(var(--themeColor), 0.5);
+    color: var(--txtHighlight);
+}
+
+p,
+ul,
+.description {
+    letter-spacing: 0.9px;
+}
+
+hr {
+    border: 0;
+    border-top: 3px solid var(--midGrey);
+    margin: 1em 0;
+}
+
+blockquote {
+    border-left: 3px solid var(--midGrey);
+    color: var(--midGrey);
+    margin: 0;
+    padding-left: 1em;
+    &:hover {
+        border-left: 3px solid rgba(var(--themeColor), 0.75);
+    }
+}
+
+a {
+    font-weight: bold;
+    border-bottom: 3px solid var(--midGrey);
+    color: inherit;
+    text-decoration: none;
+}
+
+a:hover {
+    border-bottom: 3px solid rgba(var(--themeColor), 0.75);
+}
+
+img {
+    max-width: 100%;
+}
+
+figure {
+    box-sizing: border-box;
+    display: inline-block;
+    margin: 0;
+    max-width: 100%;
+}
+
+figure img {
+    max-height: 500px;
+}
+
+@media screen and (min-width: 600px) {
+    figure {
+        padding: 0 40px;
+    }
+}
+
+figure h4 {
+    font-size: 1rem;
+    margin: 0;
+    margin-bottom: 1em;
+}
+
+code {
+    /* font-family: 'Berkeley Mono'; */
+    padding: 0.15rem 0.3rem;
+    background-color: var(--lightOverlay);
+    border-radius: 3px;
+    letter-spacing: 0px;
+}
+
+.red {
+    background-color: rgba(255, 0, 0, 0.8);
+    font-weight: bold;
+    color: #f0f0f0;
+}
+
+.blue {
+    background-color: rgba(0, 0, 255, 0.8);
+    font-weight: bold;
+    color: #f0f0f0;
+}
+
+.green {
+    background-color: rgba(0, 127, 0, 0.8);
+    font-weight: bold;
+    color: #f0f0f0;
+}
+
+pre {
+    background-color: var(--lightOverlay);
+    line-height: 1.1em;
+    overflow-x: auto;
+    padding: 2rem;
+    border-radius: 3px;
+}
+
+pre code {
+    background-color: transparent;
+    color: inherit;
+    font-size: 100%;
+    padding: 0;
+}
+
+main {
+    margin-bottom: 4em;
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 800px;
+    padding: 0 1ch;
+    word-wrap: break-word;
+}
+
+header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 1em 0;
+}
+
+header .main {
+    font-size: 1.5rem;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: var(--headerColor);
+    font-weight: bold;
+    margin-top: 2em;
+}
+
+h1 {
+    font-size: 4rem;
+}
+
+h2 {
+    font-size: 1.4rem;
+}
+
+h3 {
+    font-size: 1.2rem;
+}
+
+h4 {
+    font-size: 1.1rem;
+}
+
+h5 {
+    font-size: 1rem;
+}
+
+h6 {
+    font-size: 1rem;
+}
+
+.list-item .title {
+    font-size: 1.6rem;
+}
+
+.list-item a,
+.pagination {
+    font-weight: bold;
+    line-height: 1.3em;
+}
+
+nav a {
+    margin-right: 0.5rem;
+}
+
+.readmore {
+    display: flex;
+    justify-content: right;
+    margin-right: 0.5rem;
+}
+
+footer {
+    margin-top: 1em;
+}
+
+.title h1 {
+    margin-bottom: 0;
+    line-height: 1.1em;
+}
+
+time {
+    color: var(--midGrey);
+    font-weight: bold;
+}
+
+article .title {
+    margin-bottom: 1em;
+}
+
+article .meta {
+    font-weight: bold;
+}
+
+.tags a {
+    border-bottom: 3px solid rgba(var(--themeColor), 0.75);
+}
+
+.tags a:hover {
+    color: white;
+    background-color: rgba(var(--themeColor), 0.75);
+}
+
+.soc svg {
+    max-height: 15px;
+}
+
+.soc:hover {
+    color: white;
+}
+
+.theme-btn.dark {
+    display: none;
+}
+.dark .theme-btn.dark {
+    display: none;
+}
+.light .theme-btn.dark {
+    display: inline;
+}
+
+.light .theme-btn.light {
+    display: none;
+}
+.dark .theme-btn.light {
+    display: inline;
+}
+
+.sidenote-checkbox {
+    display: none;
+}
+
+.sidenote-content {
+    float: right;
+    clear: right;
+    position: relative;
+    margin-right: -60%;
+    width: 50%;
+    margin-top: 0.3rem;
+    margin-bottom: 0;
+    font-style: italic;
+    font-size: 0.9rem;
+    border: 3px solid var(--midGrey);
+    border-radius: 3px;
+    padding: 10px;
+}
+
+.sidenote {
+    &:hover {
+        .sidenote-label {
+            border-bottom: 3px solid rgba(var(--themeColor), 0.75);
+        }
+        .sidenote-content {
+            border: 3px solid rgba(var(--themeColor), 0.75);
+        }
+    }
+}
+
+:popover-open {
+    width: 800px;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+::backdrop {
+    backdrop-filter: blur(3px);
+}
