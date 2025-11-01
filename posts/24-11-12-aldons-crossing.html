@@ -1,0 +1,429 @@
+<!doctype html>
+<html>
+  <head>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      media="screen"
+      href="/css/main.css"
+    />
+    <script type="module" src="https://rc.aldonscrossing.app/game.js"></script>
+    <script>
+      window.onload = () => {
+        const example = document.querySelector("#aldon-example");
+        const text = `<html>
+  <head>
+    <script type="module" src="https://aldonscrossing.app/game.js"><\/script>
+  </head>
+  <body>
+    <aldon-game></aldon-game>
+  </body>
+</html>`;
+        example.innerText = text;
+      };
+    </script>
+  </head>
+  <body>
+    <main>
+      <article>
+        <h1>Aldon's Crossing</h1>
+        <div>
+          <p>
+            So in 2020 I filled some COVID time with an old favorite of mine
+            <a href="https://store.steampowered.com/app/517790/Caesar_3/"
+              >Caesar III</a
+            >. It's a classic city building game set during the rise of ancient
+            Rome. Released in 1998, its a bit dated though. After the initial
+            nostalgia wore off I became frustrated with the approx 1"x1"
+            playable area. That is, until I discovered
+            <a href="https://github.com/bvschaik/julius">Julius</a>, an open
+            source, 100% from the ground up re-implementation of Caesar III. It
+            looks and feels exactly Caesar III except it supports any screen
+            size and a few common sense improvements. What a time to be alive. I
+            knew they put Doom on everything, but I didn't realize this culture
+            of re-implementing classics extended so far beyond Tetris and Pong.
+            What a cool project...
+          </p>
+          <p>
+            Enter
+            <a href="https://palmdb.net/app/aldons-crossing">Aldon's Crossing</a
+            >, a top down RPG written for
+            <a href="https://en.wikipedia.org/wiki/Palm_(PDA)">Palm</a> devices.
+            As you can probably tell, Palm didn't take off like the iPhone did
+            as a mobile platform, let alone a gaming one. As such, though
+            released to a some critical acclaim, Aldon's Crossing has since
+            faded from pop culture's memory. Its a complete classic though. Its
+            everything I love about fantasy role playing tucked into a neat
+            little game: explore hidden ruins, find secret passages, navigate
+            plot twists, win powerful artifacts, solve puzzles, all while
+            uncovering lore.
+          </p>
+          <p>
+            What if I could bring Aldon back from the dead (spoilers)? Web tech
+            has gotten to the point where I could probably do the whole thing in
+            the browser. Aldon's Crossing could run anywhere! What a cool
+            project...
+          </p>
+          <h2>...And here it is!</h2>
+          <div style="aspect-ratio: 90 / 94">
+            <aldon-game default-scale="4"></aldon-game>
+          </div>
+          <p>
+            You can also play and install it as a PWA
+            <a href="https://aldonscrossing.app/">here</a>.
+          </p>
+          <p>This is all it takes to now to run Aldon's Crossing:</p>
+          <pre id="aldon-example"></pre>
+          <p>
+            Everything runs client side. The majority of the game is written in
+            rust compiled to webassembly. This rust core is wrapped with
+            vanilla, node-less js which implements html custom elements for the
+            game, menu, and several dialogs; rust interaction is done through
+            wasm-bindgen. All the intractable elements of the game, including
+            the main story line, was encoded by the original authors into a
+            state machine DSL which is now running on async Rust. All of this is
+            drawn to an html5 canvas.
+          </p>
+          <p>
+            I could honestly talk about all the parts to this for way longer
+            than anyone would read for, so let me focus on a handful of the most
+            interesting bits. Checkout the full source on my
+            <a href="https://github.com/viruslobster/aldons-crossing-rust"
+              >github</a
+            >.
+          </p>
+          <h2>Extracting the game assets</h2>
+          <p>
+            Feasibility rested on how the game generated a world from its assets
+            and on if I could access those assets. There are 100s of maps and
+            intractable characters in the game, some with complex behavior (e.g.
+            if the character has a certain item, spawn a bunch of fire
+            elementals and attack him). I wasn't about to rewrite all that, but
+            if all the game's art, maps, and behavior was encoded in a way a
+            could parse I was interested.
+          </p>
+          <p>
+            I was in luck! I was able to find everything I needed in three files
+            on <a href="https://palmdb.net/">palmdb.net</a>
+            <li>
+              <strong>Aldon_OS35.prc:</strong> The game binary (not useful to
+              me) and sprite files (very useful to me)
+            </li>
+            <li>
+              <strong>AldonMain.pdb</strong>: Definitions for all the game's
+              items and creatures (e.g. stats, sprite id)
+            </li>
+            <li>
+              <strong>AldonCrssing.pdb</strong>: Definitions for all the game's
+              maps (e.g. what tiles to draw, what characters were on them)
+            </li>
+          </p>
+          <p>
+            After several failed attemps I found a tool, xxx, that could split
+            out individual assets as from Aldon_OS35.prc. Now I had a file for
+            every sprite in the game. Only two problems:
+            <li>
+              The images where not in any format I recognized! For most of the
+              images I could look at `xxd $file` and map data to pixels, but I
+              had no idea how color was encoded.
+            </li>
+            <li>
+              Some of the images where way too small, they were compressed by
+              some Palm specific lib!
+            </li>
+          </p>
+
+          <p />
+          <p>
+            After a little searching I found a prebuilt windows tool that could
+            render the uncompressed palm bmps. I created myself a little rosetta
+            stone bitmap with every possible color, opened it in the viewer, and
+            voila I had the mapping. The second problem was a little harder, I
+            couldn't find anything to decompress the images for me. I did
+            however a
+            <a href="http://www.trantor.de/kawt/doc/palmimages.html">
+              description
+            </a>
+            of the algorithm. TL;DR each 8 bytes are specified relative to the
+            previous 8 bytes. 1 byte (8 flag bits) specify which of the next 8
+            bytes differ from the previous. For example "81 25 88" (0x81 =
+            0b10000001) would decompress to "25 XX XX XX XX XX XX 88" where the
+            XX bytes are filled in from the previous 8 bytes. One python script
+            later and I had 935 regular bitmaps. I input the lot into some
+            sprite sheet generator and got this:
+          </p>
+          <img src="https://aldonscrossing.app/assets/spritesheet.png" />
+          <p>Along with some JSON to map bmp ids to image regions like:</p>
+          <pre>
+              "0": {
+                "frame": {
+                  "x": 1,
+                  "y": 1,
+                  "w": 16,
+                  "h": 16
+                }
+              }
+          </pre>
+          <p>
+            The format of the pdb files was
+            <a href="https://en.wikipedia.org/wiki/PDB_(Palm_OS)"
+              >delightfully</a
+            >
+            simple. TL;DR the first 78 bytes is metadata, of which only the last
+            2 bytes (num_records) was important to me. Then for each "record" in
+            the file there are 8 bytes that give you the offset of where the
+            real data is stored for that record. At this point I decided Python
+            was too painful for binary io and switched to Go:
+          </p>
+          <pre>
+          type Record struct {
+              Offset   int64
+              Category byte
+              ID       int
+              Data     []byte
+          }
+
+          func LoadRecords(filename string) ([]Record, error) {
+              // error handling stripped for brevity
+              file, _ := os.Open(filename)
+              reader := bufio.NewReader(file)
+              numRecordsBytes := make([]byte, 2)
+              io.ReadFull(reader, numRecordsBytes)
+              numRecords := int(binary.BigEndian.Uint16(numRecordsBytes))
+              recordMeta := make([]byte, 8*numRecords)
+              io.ReadFull(reader, recordMeta)
+
+              records := make([]Record, numRecords)
+              for i := 0; i < numRecords; i++ {
+                  record := Record{}
+                  record.Offset = int64(binary.BigEndian.Uint32(recordMeta[i*8 : i*8+4]))
+                  records[i] = record
+              }
+              for i := 0; i < numRecords-1; i++ {
+                  records[i].Data = make([]byte, records[i+1].Offset-records[i].Offset)
+                  file.ReadAt(records[i].Data, records[i].Offset)
+              }
+              return records, nil
+          }
+          </pre>
+          Then came the really time consuming part of figuring out what the data
+          for each record really meant. I lazily did this as I implemented more
+          and more of the game. Eventually, I had two json files: maps.json an
+          props.json:
+          <pre>
+          // maps.json
+          {
+            "maps": {
+              "1": {
+                "north": 2,
+                "east": 4,
+                "name": "TUTOR_A",
+                "tiles": "RERCIiKsyqqqllVVS6Iid3K..."
+                "props": [{"id": 179, "x": 12, "y": 3},
+                "teleports": [{"id": 121, "from_x": 18, "from_y": 1, "to_x": 18, "to_y": 1}],
+                "actors": [
+                  {
+                    "id": 61,
+                    "x": 14,
+                    "y": 19,
+                    "health": 10,
+                    "name": "Crates",
+                    "bmp_offset": 711,
+                    "is_mapped": true,
+                    "actions": "AAACBgBAAAABCgA9BAD/FAAABAgAPQQAAAAcCACGDhMADwoGABAADwUOABQAAAAAAwAAEAAUEAgAPQATABQYCAAAAAkAGRUGBCUAGRUGAD0="
+                  },
+                ],
+                "spawners": [{"x": 0, "y": 0, "width": 24, "height": 24, "delay": 500, "max_creatures": 3, "monster_team": 2, "monster_target": 1, "level": 3, "creatures": [30]}]
+              },
+            }
+          }
+          // props.json
+          "1": {
+            "str_id": "l_swrd",
+            "name": "long sword",
+            "blocker": false,
+            "sight_blocker": false,
+            "draw_depth": 2,
+            "Weapon": {
+              "frame": 300,
+              "damage_min": 2,
+              "damage_max": 8,
+              "delay": 23,
+              "level": 1,
+              "fighter": true,
+              "thief": false,
+              "priest": false,
+              "mage": false,
+              "journeyman": false,
+              "buy_cost": 150,
+              "sell_cost": 150,
+              "equip_to": "melee"
+            }
+          },
+          </pre>
+          <h2>Vanilla JS</h2>
+          <p>- web implementation that I kept (dialogs) - pwa</p>
+          <h2>State machine runtime</h2>
+          <p>
+            The main reason re-implementing the game like this was possible in
+            my spare time was every interactive game component (road signs, shop
+            keepers, monologuing bad guys, the main storyline, etc) were state
+            machine's called actors, written in a DSL. Since I could extract all
+            these state machines from the original binary I didn't have re-write
+            any of this behavior, just the runtime.
+          </p>
+          <p>
+            Here is a state machine for a gate you can only get through if you
+            have a special key.
+          </p>
+          <pre>
+000=CREATESELF 87 // speaker, blocker
+000=SETINTEL ID=777 MESSAGEBEARER 
+000=SETTEAM ID=777 NPC // Sewer Gate
+005=SETMESSAGE ID=15 // This door is locked and requires a key., Ok., , 
+005=WAIT RESPONSE 10,0,0  // if A:goto 10 if B:goto 0 if C:goto 0
+010=IF PLAYERHAS 403 NEWSTATE=60 // check player has key, Sewers
+020=SETSTATE 777 5 // actor state, actor =Sewer Gate
+060=TELLMESSAGE ID=18 // You use the correct key., Ok., , 
+060=WAIT RESPONSE 70,0,0  // if A:goto 70 if B:goto 0 if C:goto 0
+070=TAKEITEM ID=0 403  // Player looses key, Sewers
+070=REMOVE 777 // Sewer Gate
+          </pre>
+          <p>
+            Each map has a list of actors and upon entering all get run concurrently. This DSL works mostly as you might expect, executing from top to
+            bottom. Where it through me through a loop was the state numbers on
+            the left of the equals sign. These states follow a couple special
+            rules. Actors can jump between states like a goto statement. For
+            example, above in state 010 if the player has the right key we jump
+            to the start of state 060. The states of actors are also saved when
+            exiting a map or saving a game. Upon entering a previously visited
+            map, each actor runs its 000 state and then jumps directly to its
+            saved state (unless a different state is jumped to in the 000
+            state). Upon loading a saved game, each actor jumps directly to its
+            saved state without running state 000. If an actor finishes running
+            its last state, it is "dead" and will no longer run at all.
+          </p>
+          <p>
+            These semantics were probably the most difficult part to figure out.
+            A surprising amount of the game works if you ignore all those
+            special rules, and basically everything works if you have most of
+            those rules. But a handful of maps have really weird behavior
+            without them. One would teleport me to the wrong location if I
+            loaded from a save; another would spawn extra monsters; another
+            would freeze entirely.
+          </p>
+          <p>
+            So, we have a bunch of actors that all get run when loading a map, how do we go about building a runtime for this? Lets look at the most interesting statement in the DSL, WAIT $CONDITION. This suspends the actor until the condition is met. WAIT RESPONSE is the most common, which resumes the actor after the player has selected a choice in a dialog. There are a bunch of others though, like WAIT PLAYER_HAS, WAIT LOCATION, WAIT VAR_EQUAL, etc. This adds some complexity to our runtime. We have to support arbitrarily suspending execution, polling for conditions to be met, and resuming where we left off. This sounds a lot like async coroutines to me...
+            <pre>
+
+// impl Actor
+// Define how to execute a stack based virtual machine with two operations PUSH (something onto the stack) and CALL (execute one of the supported statements).
+pub async fn act(&self) {
+    if self.dead.get() {
+        return;
+    }
+    loop {
+        let code = self.compiled.next();
+        match code {
+            None => {
+                break;
+            }
+            Some(PUSH) => {
+                let size = self.compiled.next().unwrap();
+                for _ in 0..size {
+                    self.stack
+                        .borrow_mut()
+                        .push_front(self.compiled.next().unwrap());
+                }
+            }
+            Some(CALL) => {
+                let action_id = self.compiled.next().unwrap();
+                let result = self.execute_action(action_id).await;
+            }
+        }
+    }
+}
+
+// Map all of the codes to rust functions
+async fn execute_action(&self, action_id: u16) -> Result<(), ActorError> {
+    match action_id {
+        0x0006 => self.attack().await?,
+        0x010a => self.set_intel().await?,
+        0x0206 => self.create_self().await,
+        // ...
+    }
+}
+
+// Define each supported function, pop of its parameters from the stack
+async fn set_level(&self) -> Result<(), ActorError> {
+    let mut stack = self.stack.borrow_mut();
+    let level = (stack.pop_front().unwrap() >> 8) as i32;
+    let actor_id = stack.pop_front().unwrap();
+
+    self.stage
+        .get_body(actor_id)
+        .ok_or(ActorError::BodyNotFound)?
+        .set_level(level);
+    Ok(())
+}
+// ...
+
+// Define some special futures 
+pub(crate) struct WaitFuture {
+    pub actor_id: u16,
+    pub cond: Cond,
+    pub stage: Rc<Stage>,
+    pub state: Rc<RefCell<SharedGameState>>,
+}
+
+pub enum WaitFutureResult {
+    Ok,
+    StateInterrupt(u16),
+}
+
+impl Future for WaitFuture {
+    type Output = WaitFutureResult;
+
+    fn poll(
+        self: std::pin::Pin<&mut Self>,
+        _cx: &mut std::task::Context<'_>,
+    ) -> std::task::Poll<Self::Output> {
+        let mut game_state = self.state.borrow_mut();
+
+        if let Some(actor_state) = game_state.state_interrupt_by_actor.remove(&self.actor_id) {
+            Poll::Ready(WaitFutureResult::StateInterrupt(actor_state))
+        } else if self.cond.satisfied(&self.stage, &mut game_state) {
+            Poll::Ready(WaitFutureResult::Ok)
+        } else {
+            Poll::Pending
+        }
+    }
+}
+
+// Have another act function that polls all the actor futures
+// impl Cast
+pub fn act(&mut self, now: f64) {
+    self.state.borrow_mut().now = now;
+
+    for _ in 0..self.futures.len() {
+        let mut future = self.futures.pop_back().unwrap();
+        let waker = Arc::new(NoopWaker {}).into();
+        let mut context = Context::from_waker(&waker);
+        if let Poll::Pending = future.as_mut().poll(&mut context) {
+            self.futures.push_front(future);
+        }
+    }
+}
+            </pre>
+          </p>
+          <h2>Thoughts on Rust</h2>
+          <p>
+            - I get why people like it - ownership and borrowing - async - enum
+            vs traits
+          </p>
+          <h2>Saving</h2>
+        </div>
+      </article>
+    </main>
+  </body>
+</html>
