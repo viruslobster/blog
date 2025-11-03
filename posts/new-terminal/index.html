@@ -20,26 +20,19 @@
                 <h1>We Need a New Terminal</h1>
                 <div>
                     <p>
-                        The terminal is a lot more than you might think. After
-                        you type something like <code>ls | less</code> and hit
-                        enter yeah the shell calls <code>fork()</code> and
-                        <code>exec()</code>, reads stdout/stderr, and then
-                        displays it &mdash; but that description misses the
-                        whole platform you're using.
+                        It's easy to overlook what a terminal actually is. Its
+                        not just a text box for stdout.
                     </p>
                     <p>
-                        You'll get a better understanding thinking of the
-                        terminal as a web browser and the forked program a
-                        server. There is bidirectional communication going on
-                        with its own protocol and api. For example, when you
-                        press the down arrow your terminal sends the request
-                        bytes
-                        <code>1b 5b 42</code>
-                        or
-                        <code>ESC [ B</code>
-                        and in this case <code>less</code> will respond by
-                        scrolling the view. In the opposite direction, the
-                        forked program can make a request like
+                        You should think of the terminal like a web browser and
+                        the program its running a server. There is bidirectional
+                        communication over stdout/stdin with its own protocol
+                        and api. For example, when you press the down arrow your
+                        terminal sends the request
+                        <code>ESC [ B</code> over stdin and a program like
+                        <code>less</code> would respond by scrolling the view.
+                        In the opposite direction, a program can print a request
+                        like
                         <button
                             class="inline-button"
                             popovertarget="protocol-popover"
@@ -47,17 +40,17 @@
                         >
                             <code> ESC [ ? 1000; 1006; 1003 h </code>
                         </button>
-                        , which asks the terminal to send mouse events as they
-                        happen in a similiar format.
+                        , to stdout which asks the terminal to send mouse events
+                        as they happen in a similiar format.
                     </p>
                     <p>
-                        These are "control sequences"; they are the apis
-                        available to terminal applications. These apis let you
-                        query terminal dimensions, move the cursor to any cell
-                        on the screen, set the "scrolling region" (think of a
-                        spreadsheet with sticky column headers), copy and paste
-                        rectangles, set OS window properties, and even draw
-                        images (see
+                        These are "control sequences". They don't get printed
+                        like normal text, they are the APIs available to
+                        terminal applications. They let you query terminal
+                        dimensions, move the cursor to any cell on the screen,
+                        set the "scrolling region" (think of a spreadsheet with
+                        sticky column headers), copy and paste rectangles, set
+                        OS window properties, and even draw images (see
                         <a href="https://github.com/chase/awrit">awrit</a> a
                         terminal web browser).
                     </p>
@@ -68,16 +61,14 @@
                         the reality is the terminal
                         <i>is a platform for building GUIs.</i>
                     </p>
-                    <img src="player.gif" alt="" />
-                    ^ A random example from a project I'm working on, running a
-                    battleship simulator in a termnal on the left and it's log
-                    on the right. TODO: swap out for version with images once
-                    thats ready.
+                    <img src="ships.gif" alt="" />
+                    ^ An example terminal GUI (or "TUI") using the kitty images
+                    protocol from a random project I'm working on.
                     <p>
-                        The terminal just makes a different set of trade-offs
-                        than the web. In contrast, terminal apps are easier to
-                        write, more composable, flexible, and powerful. The
-                        terminal is a application platform for developers.
+                        Terminals just make a different set of trade-offs than
+                        web browsers. They trade a lot of visual expressiveness
+                        for simplicity. But most importantly terminals
+                        prioritize composability.
                     </p>
                     <p>Just take a look at a command like this:</p>
                     <pre>$ my-cli --all-jobs | tee -p /tmp/out | head -n10</pre>
@@ -102,15 +93,15 @@
                     <p>
                         That's so many more problems to solve! Why do we do this
                         to ourselves? At least in my experience working in big
-                        tech, developers waste time building web based tools for
-                        each other. All the design trade-offs terminals make
-                        perfectly suite developer tools, why aren't we
-                        leveraging this more?
+                        tech, developers waste time building slow web based
+                        tools for eachother. All the design trade-offs terminals
+                        make perfectly suit developer tools. The terminal is an
+                        application platform for developers.
                     </p>
-                    <h2>Not enough modern features</h2>
+                    <h2>Why aren't we leveraging Terminals apps more?</h2>
                     <p>
-                        TL;DR its because it feels old. The web feels modern.
-                        Even the most modern Terminal Emulators lag behind
+                        TL;DR its because terminals feel old. The web feels
+                        modern. Even the most modern terminals lag behind
                         current development environment standards.
                     </p>
                     <h3>Its text editor, but a bad one</h3>
@@ -122,23 +113,16 @@
                     </p>
                     <p>
                         This made sense back in the day, but in a desktop
-                        environment it seems a little silly. Bash is a horrible
-                        text editor: multi-line editing sucks, background
-                        processes can spew text into your input buffer, and
-                        there's no support for highlighting, formatting, or
-                        LSPs. And worst of all, for remote connections your
-                        keystrokes are at the mercy of your ping. I want to be
-                        able to write out a thought and then submit it while on
-                        a train from NYC to DC.
+                        environment it a little silly. Bash is a horrible text
+                        editor: multi-line editing sucks, background processes
+                        can spew text into your input buffer, and there's no
+                        support for highlighting, formatting, or LSPs. Worst of
+                        all, for remote connections your keystrokes are at the
+                        mercy of your ping. I want to be able to write out a
+                        thought and then submit it while on a train from NYC to
+                        DC.
                     </p>
-                    <p>
-                        To be fair, the situation is a little better in
-                        <a href="#modern-shells-TODO">modern shells</a>, but
-                        they will never be able to compete with the experience
-                        of a dedicated text editor. Terminals should also be
-                        fully fledged text editors.
-                    </p>
-                    <h3>I need like 11 of them</h3>
+                    <h3>You need like 11 of them</h3>
                     <p>
                         I usually find myself opening a terminal for each
                         <i>thing</i> I'm doing: one for vcs, one for
@@ -150,8 +134,9 @@
                     <p>
                         The ergonomics of all wrangling all these terminals is
                         awful. Plus, every time I open a new window I have to
-                        re-setup what should be shared context (ssh, cd $dir).
-                        This is what terminal mulitplexers were created to
+                        re-setup what should be shared context (
+                        <code>ssh && cd $dir</code>
+                        ). This is what terminal mulitplexers were created to
                         solve, but
                         <a
                             href="https://sw.kovidgoyal.net/kitty/faq/#i-am-using-tmux-zellij-and-have-a-problem"
@@ -167,10 +152,10 @@
                         a little bit different but it usually follows one of a
                         couple different workflows, like building a feature for
                         a service or debugging an issue. Why do I have to
-                        rebuild UIs for these workflows every day? Why can't I
-                        save them for later or even share them with teammates?
+                        rebuild these UIs every day? Why can't I save them for
+                        later or even share them with teammates?
                     </p>
-                    <h3>Lack of GUI primitives</h3>
+                    <h3>No GUI primitives</h3>
                     <p>
                         Speaking of UI's, the only way to build one in the
                         terminal seems to be to depend on some huge library. No
@@ -217,23 +202,22 @@
                         ).playbackRate = 1.5;
                     </script>
                     <p>
-                        This is what I've been using whenever I have something
-                        complicated to do in the terminal. Above I've contrived
-                        an example where I've got to query some table for
-                        requests made after a certain time, do some parsing on
-                        the ids, and then test the result of running
+                        This is what I use for more complicated workflows. Above
+                        I've contrived an example where I've got to query some
+                        table for requests made after a certain time, do some
+                        parsing on the ids, and then test the result of running
                         <code>validator</code> on them (presumably after
                         changing it).
                     </p>
                     <p>
-                        justtxt exposes the command JustTxtRun that I've bound
-                        to a key. JustTxtRun will look at your cursor position
-                        and buffer, select either the current line or the
-                        current block (between two special comments), write that
-                        to a temp file, run it, and stream the output back into
-                        the buffer. It also supports a special comment
+                        justtxt exposes a command JustTxtRun that looks at your
+                        cursor position and buffer, selects either the current
+                        line or the current block (between two special
+                        comments), writes that to a temp file, runs it, and
+                        streams the output back into the buffer. It also
+                        supports a special comment
                         <code>#!! $whatever-shell-commands-here </code> that
-                        lets you specify how the file gets run. Basically
+                        lets you specify how the file gets run.
                         <code>!!</code> just gets replaced by the name of the
                         temp file. In the video I use this to save the full
                         output to a file and show a preview in the buffer.
@@ -247,17 +231,18 @@
                         repeat this workflow later.
                     </p>
                     <p>
-                        Its far from perfect though. I think being a neovim
-                        plugin significantly limits the UX ceiling. Commands are
-                        not run connected to a terminal, which means some things
-                        just don't work. Fixing this would be akin to
-                        implementing a terminal multiplexer, which I've already
-                        said is a
+                        Its far from perfect though. Running in neovim means the
+                        implementation is trivial but it also significantly
+                        limits what I can do. Commands are not run connected to
+                        a terminal, which means some things just don't work.
+                        Fixing this would make justxt a terminal multiplexer,
+                        which is a
                         <a
                             href="https://sw.kovidgoyal.net/kitty/faq/#i-am-using-tmux-zellij-and-have-a-problem"
                         >
-                            bad idea </a
-                        >. Command output is included in your history, which
+                            bad idea
+                        </a>
+                        . Command output is included in your history, which
                         basically means you can't use undo/redo. It's
                         difficult/impossible to get neovim to syntax highlight
                         and attach LSPs for different languages in the same
@@ -276,6 +261,12 @@
                             <p>
                                 Its built from the ground up, for maximum
                                 flexibility and performance. No web tech.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                Its open source and built on open protocols that
+                                multiple terminals can implement.
                             </p>
                         </li>
                         <li>
@@ -326,7 +317,7 @@
                         </li>
                         <li>
                             <p>
-                                Programs can write GUI components to stdout and
+                                Programs can print GUI components to stdout and
                                 then listen for interactions over stdin. You can
                                 quickly implement simple GUIs like a form or a
                                 timeseries viewer without requiring a huge
