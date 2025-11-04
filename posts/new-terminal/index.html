@@ -20,8 +20,16 @@
                 <h1>We Need a New Terminal</h1>
                 <div>
                     <p>
-                        It's easy to overlook what a terminal actually is. Its
-                        not just a text box for stdout.
+                        I use terminals quite a bit in my work, they're crazy
+                        useful. Yet, from years of working in big tech I've come
+                        to realize that tons of developers largely don't use
+                        them. They'd rather use web apps that are less powerful
+                        and more difficult to build. With some changes to how
+                        terminals work I think we can flip this and unlock
+                        productivity gains for many more developers (and spend
+                        less time building web apps). But first, a quick primer
+                        on terminals. It's easy to overlook what a terminal
+                        actually is. Its not just a text box for stdout.
                     </p>
                     <p>
                         You should think of the terminal like a web browser and
@@ -54,7 +62,7 @@
                         <a href="https://github.com/chase/awrit">awrit</a> a
                         terminal web browser).
                     </p>
-                    <h2>Platforms</h2>
+                    <h2>Terminals apps are GUIs</h2>
                     <p>
                         For years I thought of the terminal as just the way to
                         interact with programs if you aren't building a GUI, but
@@ -63,25 +71,25 @@
                     </p>
                     <img src="ships.gif" alt="" />
                     ^ An example terminal GUI (or "TUI") using the kitty images
-                    protocol from a random project I'm working on.
+                    protocol.
                     <p>
-                        Terminals just make a different set of trade-offs than
-                        web browsers. They trade a lot of visual expressiveness
-                        for simplicity. But most importantly terminals
-                        prioritize composability.
+                        Terminals make a different set of trade-offs than web
+                        browsers. Saliently, they trade visual expressiveness
+                        for simplicity, but more importantly terminals are built
+                        for composability.
                     </p>
                     <p>Just take a look at a command like this:</p>
                     <pre>$ my-cli --all-jobs | tee -p /tmp/out | head -n10</pre>
                     <p>
-                        Suppose <code>my-cli</code> is some tool for querying
-                        service deployments or something like that. The first 10
-                        lines will be shown but all the output will be available
-                        in <code>/tmp/out</code>.
+                        Suppose <code>my-cli</code> is a tool for querying
+                        service deployments. The first 10 lines will be shown
+                        but all the output will be available in
+                        <code>/tmp/out</code>.
                     </p>
                     <p>
                         Now imagine instead of building
                         <code>my-cli</code> to interact with our jobs we built a
-                        webapp. This feature, optionally streaming output to a
+                        web app. This feature, optionally streaming output to a
                         file with a configurably sized preview, might take an
                         engineering team months to implement! How will the
                         preview look? How does selecting a file fit into the
@@ -92,17 +100,18 @@
                     </p>
                     <p>
                         That's so many more problems to solve! Why do we do this
-                        to ourselves? At least in my experience working in big
-                        tech, developers waste time building slow web based
-                        tools for eachother. All the design trade-offs terminals
-                        make perfectly suit developer tools. The terminal is an
-                        application platform for developers.
+                        to ourselves? At least in my experience, developers
+                        waste time building web based tools for eachother. All
+                        the design trade-offs terminals make perfectly suit
+                        developer tools. The terminal is an application platform
+                        for developers.
                     </p>
-                    <h2>Why aren't we leveraging Terminals apps more?</h2>
+                    <h2>Why aren't we leveraging terminal apps more?</h2>
                     <p>
-                        TL;DR its because terminals feel old. The web feels
-                        modern. Even the most modern terminals lag behind
-                        current development environment standards.
+                        TL;DR its because terminals can feel old and
+                        unwelcoming. The web feels modern and friendly. Even the
+                        most modern terminals lag behind current development
+                        environment standards.
                     </p>
                     <h3>Its text editor, but a bad one</h3>
                     <p>
@@ -265,6 +274,14 @@
                         </li>
                         <li>
                             <p>
+                                It has a nice learning curve. Beginners should
+                                be productive with it quickly and gradually
+                                unlock more productivity gains as they become
+                                experts.
+                            </p>
+                        </li>
+                        <li>
+                            <p>
                                 Its open source and built on open protocols that
                                 multiple terminals can implement.
                             </p>
@@ -376,28 +393,26 @@
                             problems I mention. Kitty was the first to support
                             the Kitty graphics protocol, which lets you draw
                             images almost as easily as just printing the bytes.
-                            Kitty also has an ssh integration called
+                            Kitty also has ssh integration called
                             <a
                                 href="https://sw.kovidgoyal.net/kitty/kittens/ssh/"
                             >
                                 Truly convenient SSH
                             </a>
-                            which automatically reuses the ssh connections
-                            (among other things). Another terminal, Alacrity,
-                            supports a vi mode that lets you temporarily treat
-                            the scrollback buffer as a vim buffer, thats
-                            definitely nice.
+                            which automatically reuses ssh connections (among
+                            other things). Another terminal, Alacrity, supports
+                            a vi mode that lets you temporarily treat the
+                            scrollback buffer as a vim buffer, thats definitely
+                            nice.
                         </p>
                     </details>
                     <details>
                         <summary><h3>Warp Terminal</h3></summary>
                         <p>
-                            Warp is another modern Terminal, but is trying to
-                            innovate and take things in a new direction. I quite
-                            dislike the end result: it feels like an over
-                            cluttered freemium web app, it's leaning too hard
-                            into AI, it encourages you to sign in, and its
-                            closed source.
+                            Warp is trying to be a modern Terminal. I like the
+                            intent but not the end result. It feels like a
+                            freemium web app that leans too hard into AI. Plus
+                            its closed source.
                         </p>
                         <p>
                             However, it does have some good ideas. As far as I
@@ -445,7 +460,7 @@
                     <details>
                         <summary><h3>Jupyter Notebooks</h3></summary>
                         <p>
-                            Python notebook are obviously an inspiration for my
+                            Python notebooks are obviously an inspiration for my
                             vim plugin. Love the idea, but it can't just be for
                             Python and it can't just be in the browser.
                         </p>
@@ -455,7 +470,7 @@
                         <p>
                             I feel like Emacs is an obligatory mention here
                             since ideologically it does set out to solve most of
-                            what I ask for. I have never used emacs though.
+                            what I ask for. I could never get into emacs though.
                             Vim's modal editing is just much better.
                         </p>
                     </details>
